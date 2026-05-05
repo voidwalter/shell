@@ -39,7 +39,7 @@ ColumnLayout {
         label: I18n.tr("panels.general.profile-picture-label")
         description: I18n.tr("panels.general.profile-picture-description")
         text: Settings.data.general.avatarImage
-        placeholderText: '~/.face' // don't translate path
+        placeholderText: 'select a photo'
         buttonIcon: "photo"
         buttonTooltip: I18n.tr("panels.general.profile-tooltip")
         onInputTextChanged: text => Settings.data.general.avatarImage = text
@@ -57,10 +57,10 @@ ColumnLayout {
     initialPath: Settings.preprocessPath(Settings.data.general.avatarImage).substr(0, Settings.preprocessPath(Settings.data.general.avatarImage).lastIndexOf("/")) || Quickshell.env("HOME")
     nameFilters: ImageCacheService.basicImageFilters
     onAccepted: paths => {
-                  if (paths.length > 0) {
-                    Settings.data.general.avatarImage = paths[0];
-                  }
-                }
+      if (paths.length > 0) {
+        Settings.data.general.avatarImage = paths[0];
+      }
+    }
   }
 
   NDivider {

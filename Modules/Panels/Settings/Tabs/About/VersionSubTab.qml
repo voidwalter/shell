@@ -66,36 +66,6 @@ ColumnLayout {
     return lines.join(sep);
   }
 
-  function getTelemetryPayload() {
-    const screens = Quickshell.screens || [];
-    const scales = CompositorService.displayScales || {};
-    const monitors = [];
-    for (let i = 0; i < screens.length; i++) {
-      const screen = screens[i];
-      const name = screen.name || "Unknown";
-      const scaleData = scales[name];
-      const scaleValue = (typeof scaleData === "object" && scaleData !== null) ? (scaleData.scale || 1.0) : (scaleData || 1.0);
-      monitors.push({
-                      width: screen.width || 0,
-                      height: screen.height || 0,
-                      scale: scaleValue
-                    });
-    }
-    return {
-      instanceId: TelemetryService.getInstanceId(),
-      version: UpdateService.currentVersion,
-      compositor: TelemetryService.getCompositorType(),
-      os: HostService.osPretty || "Unknown",
-      ramGb: Math.round((root.getModule("Memory")?.result?.total || 0) / root.gigaB),
-      monitors: monitors,
-      ui: {
-        scaleRatio: Settings.data.general.scaleRatio,
-        fontDefaultScale: Settings.data.ui.fontDefaultScale,
-        fontFixedScale: Settings.data.ui.fontFixedScale
-      }
-    };
-  }
-
   function copyInfoToClipboard() {
     let info = "Shell Status: " + root.currentVersion;
     if (root.isGitVersion && root.commitInfo) {
@@ -290,7 +260,6 @@ ColumnLayout {
   }
 
   RowLayout {
-    Layout.alignment: Qt.AlignHCenter
     spacing: Style.marginXL
 
     ColumnLayout {
@@ -352,30 +321,38 @@ ColumnLayout {
           }
         }
       }
+
+      GridLayout {
+        columns: 2
+        rowSpacing: Style.marginXS
+        columnSpacing: Style.marginM
+
+        NText {
+          text: "Branch:"
+          color: Color.mOnSurfaceVariant
+          Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+        }
+
+        RowLayout {
+          NText {
+            text: "unstable"
+            color: Color.mOnSurface
+            font.weight: Style.fontWeightBold
+          }
+
+          MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: {
+              Qt.openUrlExternally("https://github.com/voidwalter/shell/tree/")
+            }
+          }
+        }
+      }
     }
   }
 
-  GridLayout {
-    id: actionsGrid
-    Layout.alignment: Qt.AlignHCenter
-    Layout.topMargin: Style.marginM
-    Layout.bottomMargin: Style.marginM
-    rowSpacing: Style.marginM
-    columnSpacing: Style.marginM
-
-    columns: (changelogBtn.implicitWidth + copyBtn.implicitWidth + supportBtn.implicitWidth + 2 * columnSpacing) < root.width ? 3 : 1
-
-    NButton {
-      id: copyBtn
-      icon: "copy"
-      text: I18n.tr("panels.about.copy-info")
-      outlined: true
-      Layout.alignment: Qt.AlignHCenter
-      onClicked: root.copyInfoToClipboard()
-    }
-  }
-
-  // System Information Section
+    // System Information Section
   NDivider {
     Layout.fillWidth: true
   }
@@ -693,6 +670,25 @@ ColumnLayout {
         pointSize: sysInfo.textSize
         Layout.fillWidth: !isLabel
         wrapMode: Text.Wrap
+      }
+    }
+
+    GridLayout {
+      id: actionsGrid
+      Layout.alignment: Qt.AlignHCenter
+      Layout.topMargin: Style.marginM
+      Layout.bottomMargin: Style.marginM
+      rowSpacing: Style.marginM
+      columnSpacing: Style.marginM
+      columns: (changelogBtn.implicitWidth + copyBtn.implicitWidth + supportBtn.implicitWidth + 2 * columnSpacing) < root.width ? 3 : 1
+
+      NButton {
+        id: copyBtn
+        icon: "copy"
+        text: I18n.tr("panels.about.copy-info")
+        outlined: true
+        Layout.alignment: Qt.AlignHCenter
+        onClicked: root.copyInfoToClipboard()
       }
     }
   }

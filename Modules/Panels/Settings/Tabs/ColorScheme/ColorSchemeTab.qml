@@ -28,9 +28,9 @@ ColumnLayout {
         var mm = ("0" + m).slice(-2);
         var key = hh + ":" + mm;
         timeOptions.append({
-                             "key": key,
-                             "name": key
-                           });
+          "key": key,
+          "name": key
+        });
       }
     }
   }
